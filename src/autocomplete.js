@@ -10,36 +10,28 @@
 
 angular.module('google.places', [])
   /**
-   * DI wrapper around global google places library.
-   *
-   * Note: requires the Google Places API to already be loaded on the page.
-   */
-  .factory('googlePlacesApi', ['$window', function ($window) {
-        if (!$window.google) throw 'Global `google` var missing. Did you forget to include the places API script?';
-
-    return $window.google;
-  }])
-
-  /**
    * Autocomplete directive. Use like this:
    *
    * <input type="text" g-places-autocomplete ng-model="myScopeVar" />
    */
   .directive('gPlacesAutocomplete',
-        [ '$parse', '$compile', '$timeout', '$document', 'googlePlacesApi',
-        function ($parse, $compile, $timeout, $document, google) {
+        [ '$parse', '$compile', '$timeout', '$document',
+        function ($parse, $compile, $timeout, $document) {
 
             return {
                 restrict: 'A',
                 require: '^ngModel',
                 scope: {
                     model: '=ngModel',
+                    google: '=',
                     options: '=?',
                     forceSelection: '=?',
                     customPlaces: '=?'
                 },
                 controller: ['$scope', function ($scope) {}],
                 link: function ($scope, element, attrs, controller) {
+                    var google = $scope.google;
+
                     var keymap = {
                             tab: 9,
                             enter: 13,
