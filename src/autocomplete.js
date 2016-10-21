@@ -157,15 +157,20 @@ angular.module('google.places', [])
                             });
                         } else {
                             placesService.getDetails({ placeId: prediction.place_id }, function (place, status) {
-                                if (status == google.maps.places.PlacesServiceStatus.OK) {
-                                    $scope.$apply(function () {
-                                        $scope.model = place;
-                                        $scope.$emit('g-places-autocomplete:select', place);
-                                        $timeout(function () {
-                                            controller.$viewChangeListeners.forEach(function (fn) { fn(); });
-                                        });
+                                $scope.$apply(function () {
+                                    var newChoice;
+                                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                                      newChoice = place;
+                                    } else {
+                                      newChoice = prediction;
+                                      newChoice.formatted_address = prediction.description;
+                                    }
+                                    $scope.model = newChoice;
+                                    $scope.$emit('g-places-autocomplete:select', newChoice);
+                                    $timeout(function () {
+                                        controller.$viewChangeListeners.forEach(function (fn) { fn(); });
                                     });
-                                }
+                                });
                             });
                         }
 
@@ -181,6 +186,7 @@ angular.module('google.places', [])
 
                         request = angular.extend({ input: viewValue }, $scope.options);
                         autocompleteService.getPlacePredictions(request, function (predictions, status) {
+                          $timeout(function () {
                             $scope.$apply(function () {
                                 var customPlacePredictions;
 
@@ -199,6 +205,7 @@ angular.module('google.places', [])
                                     $scope.predictions.length = 5;  // trim predictions down to size
                                 }
                             });
+                          })
                         });
 
                         if ($scope.forceSelection) {
