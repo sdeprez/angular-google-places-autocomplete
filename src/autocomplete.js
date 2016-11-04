@@ -333,7 +333,7 @@ angular.module('google.places', [])
     ])
 
 
-    .directive('gPlacesAutocompleteDrawer', ['$window', '$document', function ($window, $document) {
+    .directive('gPlacesAutocompleteDrawer', ['$window', '$document', '$timeout', function ($window, $document, $timeout) {
         var TEMPLATE = [
             '<div class="pac-container" ng-if="isOpen()" ng-style="{top: position.top+\'px\', left: position.left+\'px\', width: position.width+\'px\'}" style="display: block;" role="listbox" aria-hidden="{{!isOpen()}}">',
             '  <div class="pac-item" g-places-autocomplete-prediction index="$index" prediction="prediction" query="query"',
@@ -359,7 +359,7 @@ angular.module('google.places', [])
                 });
 
                 $window.onresize = function () {
-                    $scope.$apply(function () {
+                    $timeout(function () {
                         $scope.position = getDrawerPosition($scope.input);
                     });
                 };
